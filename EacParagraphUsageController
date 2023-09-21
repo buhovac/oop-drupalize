@@ -1,0 +1,45 @@
+<?php
+
+namespace Drupal\eac_paragraph_usage\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\paragraphs\Entity\Paragraph;
+
+/**
+ * An example controller.
+ */
+class EacParagraphUsageController extends ControllerBase {
+
+  /**
+   * Returns a render-able array for a test page.
+   */
+  public function overview() {
+
+    // GET ALL Nodes.
+    // $nids = \Drupal::entityQuery('node')->condition('type','page')->execute();.
+    // $nodes =  \Drupal\node\Entity\Node::loadMultiple($nids);.
+    // GET Node by ID.
+    $service = \Drupal::service('entity_type.manager')->getStorage('node');
+    $node = $service->load(2310);
+    // Getting all paragraphs from the Content field and echo-ing paragraph titles.
+    if (!empty($node->field_page_content->getValue())) {
+      foreach ($node->field_page_content->getValue() as $value) {
+        if (!empty($value['target_id'])) {
+          $paragraph = Paragraph::load($value['target_id']);
+          echo nl2br('<h1 style="color:#0096FF">'.$paragraph->bundle().'</h1>'."\n");
+          var_dump($paragraph);
+        }
+      }
+    }
+    $build = [
+      '#markup' => $this->t('Hola Mundo!'),
+    ];
+    return $build;
+  }
+}
+// Colecting info on ALL paragraphs
+/* $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo('paragraph');
+foreach($bundles as $key => $bundle){
+  $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('paragraph', $key);
+  var_dump($fields);
+} */
